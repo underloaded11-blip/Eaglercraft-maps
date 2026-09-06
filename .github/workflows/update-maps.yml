@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '**.zip'
+      - '**.epk'
       - '!**.exe'
 
 permissions:
@@ -128,7 +129,7 @@ jobs:
               </audio>
               <header>
                   <h1>Eaglercraft Map Depot</h1>
-                  <p>Download custom singleplayer worlds (.zip format)</p>
+                  <p>Download custom singleplayer worlds (.zip and .epk format)</p>
               </header>
               <div class="container">
                   <h3>Available Maps</h3>
@@ -136,7 +137,7 @@ jobs:
           EOF
 
           found=0
-          for file in *.zip; do
+          for file in *.zip *.epk; do
               if [ -f "$file" ]; then
                   found=1
                   displayName=$(echo "$file" | sed 's/\.[^.]*$//' | tr '_-' '  ')
@@ -178,4 +179,4 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update map list for zip files" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update map list for zip and epk files" && git push)

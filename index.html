@@ -88,6 +88,29 @@
             margin-top: 0;
         }
 
+        .map-card {
+            background: #2b2b2b;
+            border: 2px solid #3d3d3d;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: inset 2px 2px #1e1e1e;
+        }
+
+        .map-info h4 {
+            margin: 0 0 5px 0;
+            color: #55ff55;
+            font-size: 1.1rem;
+            word-break: break-all;
+        }
+
+        .map-info span {
+            font-size: 0.75rem;
+            color: #888888;
+        }
+
         .empty-state {
             text-align: center;
             color: #777777;
@@ -100,7 +123,7 @@
 
     <!-- Embedded Minecraft Click Sound using base64 audio data -->
     <audio id="clickSound" preload="auto">
-        <source src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU2LjQwLjEwMQAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACaAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcH//tQAAAAAAAAAAAAAAACgAAAAAVGVzdAABAAADAAAAAAAAAAAA//tQxAAAAACWAAAAW2xhdmY1Ni40MC4xMDEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+tQxAABAAACaQAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAI=" type="audio/mpeg">
+        <source src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU2LjQwLjEwMQAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACaAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcH//tQAAAAAAAAAAAAAAACgAAAAAVGVzdAABAAADAAAAAAAAAAAA//tQxAAAAACWAAAAW2xhdmY1Ni40MC4xMDEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+tQxAABAAACaQAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAI=" type="audio/mpeg">
     </audio>
 
     <header>
@@ -110,7 +133,9 @@
 
     <div class="container">
         <h3>Available Maps</h3>
-        <div class="empty-state">No maps available yet.</div>
+        <div id="mapListContainer">
+            <div class="empty-state">Loading maps from repository...</div>
+        </div>
     </div>
 
     <script>
@@ -127,6 +152,51 @@
                 playClickSound();
             }
         });
+
+        // Automatically fetch and display .epk files from the GitHub repository
+        async function loadMaps() {
+            const container = document.getElementById('mapListContainer');
+            // Change 'underloaded11-blip' and 'minecraft-maps' if your repo details differ
+            const repoOwner = 'underloaded11-blip';
+            const repoName = 'minecraft-maps';
+            
+            try {
+                const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/`);
+                if (!response.ok) throw new Error('Failed to fetch repository contents');
+                
+                const files = await response.json();
+                // Filter out everything except files ending with .epk
+                const epkFiles = files.filter(file => file.type === 'file' && file.name.toLowerCase().endsWith('.epk'));
+
+                if (epkFiles.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No .epk maps found in the repository.</div>';
+                    return;
+                }
+
+                container.innerHTML = ''; // Clear loading state
+                epkFiles.forEach(file => {
+                    // Clean up filename for display (remove .epk and replace dashes/underscores with spaces)
+                    let displayName = file.name.replace(/\.epk$/i, '').replace(/[-_]/g, ' ');
+                    
+                    const card = document.createElement('div');
+                    card.className = 'map-card';
+                    card.innerHTML = `
+                        <div class="map-info">
+                            <h4>${displayName}</h4>
+                            <span>File: ${file.name}</span>
+                        </div>
+                        <a href="${file.download_url}" class="mc-btn" download>Download</a>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                container.innerHTML = '<div class="empty-state">Could not load maps automatically. Please add map cards manually.</div>';
+            }
+        }
+
+        // Run the fetch script when the page loads
+        window.addEventListener('DOMContentLoaded', loadMaps);
     </script>
 </body>
 </html>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eaglercraft Map Depot</title>
+    <!-- Importing official Minecraft-style font (Minecraftia) -->
     <style>
         @font-face {
             font-family: 'Minecraft';
@@ -61,18 +62,12 @@
             padding: 25px;
         }
 
-        /* Upload Section Style */
+        /* Notice Section Style */
         .upload-box {
             border: 3px dashed #555555;
             background: rgba(0, 0, 0, 0.3);
             padding: 25px;
             text-align: center;
-            transition: 0.2s;
-        }
-
-        .upload-box:hover {
-            border-color: #55ff55;
-            background: rgba(0, 50, 0, 0.2);
         }
 
         /* Minecraft Button Style */
@@ -141,17 +136,6 @@
             padding: 30px 0;
         }
 
-        input[type="file"] {
-            display: none;
-        }
-
-        .error-msg {
-            color: #ff5555;
-            font-size: 0.8rem;
-            margin-top: 8px;
-            text-shadow: 1px 1px #000;
-        }
-
         .page-content {
             display: none;
         }
@@ -163,53 +147,47 @@
 </head>
 <body>
 
+    <!-- Embedded Minecraft Click Sound using base64 audio data -->
     <audio id="clickSound" preload="auto">
-        <source src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU2LjQwLjEwMQAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACaAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcH//tQAAAAAAAAAAAAAAACgAAAAAVGVzdAABAAADAAAAAAAAAAAA//tQxAAAAACWAAAAW2xhdmY1Ni40MC4xMDEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+tQxAABAAACaQAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAA=" type="audio/mpeg">
+        <source src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU2LjQwLjEwMQAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACaAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcH//tQAAAAAAAAAAAAAAACgAAAAAVGVzdAABAAADAAAAAAAAAAAA//tQxAAAAACWAAAAW2xhdmY1Ni40MC4xMDEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+tQxAABAAACaQAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAI=" type="audio/mpeg">
     </audio>
 
     <header>
         <h1>Eaglercraft Map Depot</h1>
-        <p>Share and download custom singleplayer worlds (.epk format only)</p>
+        <p>Download custom singleplayer worlds (.epk format)</p>
     </header>
 
+    <!-- Top Navigation Header / Page Switcher -->
     <div class="nav-bar">
         <button id="navMapsBtn" class="mc-btn active-tab" onclick="switchPage('maps')">Maps</button>
         <button id="navUploadBtn" class="mc-btn" onclick="switchPage('upload')">Upload</button>
     </div>
 
     <div class="container">
+        <!-- MAPS PAGE -->
         <div id="pageMaps" class="page-content active">
             <h3>Available Maps</h3>
             <div id="mapListContainer">
-                <div class="empty-state">No maps available yet. Go to the Upload page to add the first one!</div>
+                <div class="empty-state">No maps available yet. Add maps directly to your GitHub repository files to display them here!</div>
             </div>
         </div>
 
+        <!-- UPLOAD PAGE -->
         <div id="pageUpload" class="page-content">
             <div class="upload-box">
-                <h3>Upload a New Map</h3>
-                <p>Only valid Eaglercraft world backup files are accepted.</p>
-                <label for="mapFileSelect" class="mc-btn" style="display: inline-block;">Choose .epk File</label>
-                <input type="file" id="mapFileSelect" accept=".epk" onchange="handleFileSelection(event)">
-                <div id="fileNameDisplay" style="margin-top: 10px; font-size: 0.85rem; color: #ffff55;"></div>
-                <div id="errorContainer" class="error-msg"></div>
-                <br>
-                <button id="uploadBtn" class="mc-btn" style="display:none; margin-top: 15px;" onclick="uploadMap()">Publish to Depot</button>
+                <h3>Upload Disabled</h3>
+                <p style="color: #ff5555; margin-top: 15px;">Direct uploads to this site are disabled.</p>
+                <p style="font-size: 0.8rem; color: #aaaaaa; margin-top: 10px;">To add maps to this depot, upload your <strong>.epk</strong> files directly into your GitHub repository folder.</p>
             </div>
         </div>
     </div>
 
     <script>
-        let selectedFile = null;
-        let mapsDatabase = [];
-
         // Function to play standard Minecraft menu click sound
         function playClickSound() {
             const sound = document.getElementById('clickSound');
             sound.currentTime = 0;
-            sound.play().catch(() => {
-                // Browser policy fallback if auto-play block triggers
-            });
+            sound.play().catch(() => {});
         }
 
         // Switch between 'maps' and 'upload' pages
@@ -232,84 +210,6 @@
                 navUploadBtn.classList.add('active-tab');
                 navMapsBtn.classList.remove('active-tab');
             }
-        }
-
-        function handleFileSelection(event) {
-            playClickSound();
-            const file = event.target.files[0];
-            const errorContainer = document.getElementById('errorContainer');
-            const fileNameDisplay = document.getElementById('fileNameDisplay');
-            const uploadBtn = document.getElementById('uploadBtn');
-
-            errorContainer.textContent = "";
-            
-            if (!file) return;
-
-            // Strict extension check for .epk
-            if (!file.name.toLowerCase().endsWith('.epk')) {
-                errorContainer.textContent = "Error: Only .epk files are allowed! No scripts, zips, or executables.";
-                selectedFile = null;
-                fileNameDisplay.textContent = "";
-                uploadBtn.style.display = "none";
-                return;
-            }
-
-            selectedFile = file;
-            fileNameDisplay.textContent = `Selected: ${file.name} (${(file.size / (1024*1024)).toFixed(2)} MB)`;
-            uploadBtn.style.display = "inline-block";
-        }
-
-        function uploadMap() {
-            playClickSound();
-            if (!selectedFile) return;
-
-            const mapEntry = {
-                name: selectedFile.name.replace(/\.[^/.]+$/, ""), // Strip extension for clean title
-                filename: selectedFile.name,
-                size: (selectedFile.size / (1024*1024)).toFixed(2) + " MB",
-                url: URL.createObjectURL(selectedFile)
-            };
-
-            mapsDatabase.push(mapEntry);
-
-            // Reset inputs
-            selectedFile = null;
-            document.getElementById('mapFileSelect').value = "";
-            document.getElementById('fileNameDisplay').textContent = "";
-            document.getElementById('uploadBtn').style.display = "none";
-
-            renderMaps();
-            
-            // Automatically switch back to the Maps page after successful upload
-            switchPage('maps');
-        }
-
-        function renderMaps() {
-            const container = document.getElementById('mapListContainer');
-            
-            if (mapsDatabase.length === 0) {
-                container.innerHTML = `<div class="empty-state">No maps available yet. Go to the Upload page to add the first one!</div>`;
-                return;
-            }
-
-            container.innerHTML = "";
-            mapsDatabase.forEach((map) => {
-                container.innerHTML += `
-                    <div class="map-card">
-                        <div class="map-info">
-                            <h4>${escapeHtml(map.name)}</h4>
-                            <span>File: ${escapeHtml(map.filename)} | Size: ${map.size}</span>
-                        </div>
-                        <a href="${map.url}" download="${map.filename}" onclick="playClickSound()">
-                            <button class="mc-btn">Download .epk</button>
-                        </a>
-                    </div>
-                `;
-            });
-        }
-
-        function escapeHtml(text) {
-            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
     </script>
 </body>

@@ -29,7 +29,7 @@
 
         header {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 40px;
             text-shadow: 3px 3px #000000;
         }
 
@@ -45,29 +45,14 @@
             text-shadow: 2px 2px #000000;
         }
 
-        /* Navigation Menu Bar */
-        .nav-bar {
-            display: flex;
-            gap: 15px;
-            margin: 20px 0;
-        }
-
         .container {
             width: 90%;
             max-width: 800px;
             background: rgba(30, 30, 30, 0.85);
             border: 4px solid #373737;
             box-shadow: inset 0 0 10px #000000, 5px 5px 15px rgba(0,0,0,0.7);
-            margin: 10px 0 40px 0;
+            margin: 30px 0 40px 0;
             padding: 25px;
-        }
-
-        /* Notice Section Style */
-        .upload-box {
-            border: 3px dashed #555555;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 25px;
-            text-align: center;
         }
 
         /* Minecraft Button Style */
@@ -82,6 +67,8 @@
             cursor: pointer;
             text-shadow: 2px 2px #3f3f3f;
             box-shadow: inset -2px -2px #222222, inset 2px 2px #9e9e9e;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .mc-btn:hover {
@@ -92,12 +79,6 @@
 
         .mc-btn:active {
             box-shadow: inset 2px 2px #233759;
-        }
-
-        .mc-btn.active-tab {
-            background-color: #4a8c4a;
-            border-color: #2e592e #193319 #193319 #2e592e;
-            box-shadow: inset -2px -2px #193319, inset 2px 2px #6bc26b;
         }
 
         /* Map List Display */
@@ -135,21 +116,13 @@
             font-style: italic;
             padding: 30px 0;
         }
-
-        .page-content {
-            display: none;
-        }
-
-        .page-content.active {
-            display: block;
-        }
     </style>
 </head>
 <body>
 
     <!-- Embedded Minecraft Click Sound using base64 audio data -->
     <audio id="clickSound" preload="auto">
-        <source src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU2LjQwLjEwMQAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACaAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcH//tQAAAAAAAAAAAAAAACgAAAAAVGVzdAABAAADAAAAAAAAAAAA//tQxAAAAACWAAAAW2xhdmY1Ni40MC4xMDEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+tQxAABAAACaQAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAI=" type="audio/mpeg">
+        <source src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU2LjQwLjEwMQAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACaAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcH//tQAAAAAAAAAAAAAAACgAAAAAVGVzdAABAAADAAAAAAAAAAAA//tQxAAAAACWAAAAW2xhdmY1Ni40MC4xMDEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+tQxAABAAACaQAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAI=" type="audio/mpeg">
     </audio>
 
     <header>
@@ -157,28 +130,10 @@
         <p>Download custom singleplayer worlds (.epk format)</p>
     </header>
 
-    <!-- Top Navigation Header / Page Switcher -->
-    <div class="nav-bar">
-        <button id="navMapsBtn" class="mc-btn active-tab" onclick="switchPage('maps')">Maps</button>
-        <button id="navUploadBtn" class="mc-btn" onclick="switchPage('upload')">Upload</button>
-    </div>
-
     <div class="container">
-        <!-- MAPS PAGE -->
-        <div id="pageMaps" class="page-content active">
-            <h3>Available Maps</h3>
-            <div id="mapListContainer">
-                <div class="empty-state">No maps available yet. Add maps directly to your GitHub repository files to display them here!</div>
-            </div>
-        </div>
-
-        <!-- UPLOAD PAGE -->
-        <div id="pageUpload" class="page-content">
-            <div class="upload-box">
-                <h3>Upload Disabled</h3>
-                <p style="color: #ff5555; margin-top: 15px;">Direct uploads to this site are disabled.</p>
-                <p style="font-size: 0.8rem; color: #aaaaaa; margin-top: 10px;">To add maps to this depot, upload your <strong>.epk</strong> files directly into your GitHub repository folder.</p>
-            </div>
+        <h3>Available Maps</h3>
+        <div id="mapListContainer">
+            <div class="empty-state">No maps available yet.</div>
         </div>
     </div>
 
@@ -190,27 +145,12 @@
             sound.play().catch(() => {});
         }
 
-        // Switch between 'maps' and 'upload' pages
-        function switchPage(pageName) {
-            playClickSound();
-
-            const pageMaps = document.getElementById('pageMaps');
-            const pageUpload = document.getElementById('pageUpload');
-            const navMapsBtn = document.getElementById('navMapsBtn');
-            const navUploadBtn = document.getElementById('navUploadBtn');
-
-            if (pageName === 'maps') {
-                pageMaps.classList.add('active');
-                pageUpload.classList.remove('active');
-                navMapsBtn.classList.add('active-tab');
-                navUploadBtn.classList.remove('active-tab');
-            } else if (pageName === 'upload') {
-                pageUpload.classList.add('active');
-                pageMaps.classList.remove('active');
-                navUploadBtn.classList.add('active-tab');
-                navMapsBtn.classList.remove('active-tab');
+        // Add sound trigger to any interactive buttons on the page
+        document.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') {
+                playClickSound();
             }
-        }
+        });
     </script>
 </body>
 </html>

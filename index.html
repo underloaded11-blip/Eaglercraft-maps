@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eaglercraft Map Depot</title>
+    <style>
+        @font-face {
+            font-family: 'Minecraft';
+            src: url('https://cdn.jsdelivr.net/gh/South-Paw/typeface-minecraft@master/files/minecraft-regular.woff') format('woff');
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Minecraft', monospace;
+            color: #ffffff;
+            /* Minecraft Dirt Background with a dark tint overlay */
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url('minecraft-bg.png') repeat, 
+                        #2b2b2b;
+            background-size: 128px 128px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-top: 40px;
+            text-shadow: 3px 3px #000000;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #ffffee;
+            margin-bottom: 5px;
+        }
+
+        p {
+            color: #aaaaaa;
+            font-size: 0.9rem;
+            text-shadow: 2px 2px #000000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: rgba(30, 30, 30, 0.85);
+            border: 4px solid #373737;
+            box-shadow: inset 0 0 10px #000000, 5px 5px 15px rgba(0,0,0,0.7);
+            margin: 20px 0 40px 0;
+            padding: 25px;
+        }
+
+        /* Upload Section Style */
+        .upload-box {
+            border: 3px dashed #555555;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            transition: 0.2s;
+        }
+
+        .upload-box:hover {
+            border-color: #55ff55;
+            background: rgba(0, 50, 0, 0.2);
+        }
+
+        /* Minecraft Button Style */
+        .mc-btn {
+            background-color: #727272;
+            color: #ffffff;
+            font-family: 'Minecraft', monospace;
+            font-size: 1rem;
+            border: 3px solid;
+            border-color: #373737 #222222 #222222 #373737;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-shadow: 2px 2px #3f3f3f;
+            box-shadow: inset -2px -2px #222222, inset 2px 2px #9e9e9e;
+            margin-top: 10px;
+        }
+
+        .mc-btn:hover {
+            background-color: #638bcb;
+            border-color: #3a5c96 #233759 #233759 #3a5c96;
+            box-shadow: inset -2px -2px #233759, inset 2px 2px #8ab2f5;
+        }
+
+        .mc-btn:active {
+            box-shadow: inset 2px 2px #233759;
+        }
+
+        /* Map List Display */
+        h3 {
+            border-bottom: 2px solid #555555;
+            padding-bottom: 8px;
+            margin-top: 0;
+        }
+
+        .map-card {
+            background: #2b2b2b;
+            border: 2px solid #3d3d3d;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: inset 2px 2px #1e1e1e;
+        }
+
+        .map-info h4 {
+            margin: 0 0 5px 0;
+            color: #55ff55;
+            font-size: 1.1rem;
+        }
+
+        .map-info span {
+            font-size: 0.75rem;
+            color: #888888;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #777777;
+            font-style: italic;
+            padding: 30px 0;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .error-msg {
+            color: #ff5555;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            text-shadow: 1px 1px #000;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Eaglercraft Map Depot</h1>
+        <p>Share and download custom singleplayer worlds (.epk format only)</p>
+    </header>
+
+    <div class="container">
+        <div class="upload-box">
+            <h3>Upload a New Map</h3>
+            <p>Only valid Eaglercraft world backup files are accepted.</p>
+            <label for="mapFileSelect" class="mc-btn" style="display: inline-block;">Choose .epk File</label>
+            <input type="file" id="mapFileSelect" accept=".epk" onchange="handleFileSelection(event)">
+            <div id="fileNameDisplay" style="margin-top: 10px; font-size: 0.85rem; color: #ffff55;"></div>
+            <div id="errorContainer" class="error-msg"></div>
+            <br>
+            <button id="uploadBtn" class="mc-btn" style="display:none;" onclick="uploadMap()">Publish to Depot</button>
+        </div>
+
+        <div>
+            <h3>Available Maps</h3>
+            <div id="mapListContainer">
+                <div class="empty-state">No maps available yet. Upload the first one above!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+
+        // In-memory array acting as storage (can be connected to a backend/GitHub Actions later if persistence is needed)
+        let mapsDatabase = [];
+
+        function handleFileSelection(event) {
+            const file = event.target.files[0];
+            const errorContainer = document.getElementById('errorContainer');
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            const uploadBtn = document.getElementById('uploadBtn');
+
+            errorContainer.textContent = "";
+            
+            if (!file) return;
+
+            // Strict extension check for .epk
+            if (!file.name.toLowerCase().endsWith('.epk')) {
+                errorContainer.textContent = "Error: Only .epk files are allowed! No scripts, zips, or executables.";
+                selectedFile = null;
+                fileNameDisplay.textContent = "";
+                uploadBtn.style.display = "none";
+                return;
+            }
+
+            selectedFile = file;
+            fileNameDisplay.textContent = `Selected: ${file.name} (${(file.size / (1024*1024)).toFixed(2)} MB)`;
+            uploadBtn.style.display = "inline-block";
+        }
+
+        function uploadMap() {
+            if (!selectedFile) return;
+
+            const mapEntry = {
+                name: selectedFile.name.replace(/\.[^/.]+$/, ""), // Strip extension for clean title
+                filename: selectedFile.name,
+                size: (selectedFile.size / (1024*1024)).toFixed(2) + " MB",
+                // Creating a local temporary URL for browser download simulation
+                url: URL.createObjectURL(selectedFile)
+            };
+
+            mapsDatabase.push(mapEntry);
+
+            // Reset inputs
+            selectedFile = null;
+            document.getElementById('mapFileSelect').value = "";
+            document.getElementById('fileNameDisplay').textContent = "";
+            document.getElementById('uploadBtn').style.display = "none";
+
+            renderMaps();
+        }
+
+        function renderMaps() {
+            const container = document.getElementById('mapListContainer');
+            
+            if (mapsDatabase.length === 0) {
+                container.innerHTML = `<div class="empty-state">No maps available yet. Upload the first one above!</div>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            mapsDatabase.forEach((map, index) => {
+                container.innerHTML += `
+                    <div class="map-card">
+                        <div class="map-info">
+                            <h4>${escapeHtml(map.name)}</h4>
+                            <span>File: ${escapeHtml(map.filename)} | Size: ${map.size}</span>
+                        </div>
+                        <a href="${map.url}" download="${map.filename}">
+                            <button class="mc-btn">Download .epk</button>
+                        </a>
+                    </div>
+                `;
+            });
+        }
+
+        // Basic safety helper to escape user strings
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+    </script>
+</body>
+</html>

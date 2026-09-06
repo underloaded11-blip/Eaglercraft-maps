@@ -124,8 +124,9 @@ jobs:
               </style>
           </head>
           <body>
+              <!-- Minecraft UI Click Sound -->
               <audio id="clickSound" preload="auto">
-                  <source src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU2LjQwLjEwMQAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACaAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcH//tQAAAAAAAAAAAAAAACgAAAAAVGVzdAABAAADAAAAAAAAAAAA//tQxAAAAACWAAAAW2xhdmY1Ni40MC4xMDEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+tQxAABAAACaQAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAI=" type="audio/mpeg">
+                  <source src="https://actions.google.com/sounds/v1/ui/button_click.ogg" type="audio/ogg">
               </audio>
               <header>
                   <h1>Eaglercraft Map Depot</h1>
@@ -165,7 +166,7 @@ jobs:
                       sound.play().catch(() => {});
                   }
                   document.addEventListener('click', (e) => {
-                      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') {
+                      if (e.target.classList.contains('mc-btn')) {
                           playClickSound();
                       }
                   });
@@ -179,4 +180,4 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update map list for zip and epk files" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Add click sound and update map list" && git push)
